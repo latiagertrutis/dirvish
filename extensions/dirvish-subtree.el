@@ -416,8 +416,7 @@ See `dirvish-subtree-file-viewer' for details"
       (if (dirvish-side--session-visible-p) (select-window (dv-root-window session) (switch-to-buffer orig-buf))))
     (when newLine (progn
          (dired-find-file))
-          (goto-line newLine)
-         )))
+          (goto-line newLine))))
 
 
 (defalias 'dirvish-toggle-subtree #'dirvish-subtree-toggle
