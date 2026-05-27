@@ -23,6 +23,7 @@
 (require 'dirvish)
 (require 'dired-x)
 (require 'transient)
+(require 'dirvish-side)
 
 (defcustom dirvish-subtree-listing-switches nil
   "Listing SWITCHES used in subtrees.
