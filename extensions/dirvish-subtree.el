@@ -19,11 +19,10 @@
 (declare-function consult-lsp-file-symbols "consult-lsp")
 (declare-function consult-imenu "consult-imenu")
 (declare-function consult-line "consult")
-(declare-function dirvish-side--session-visible-p "dirvish-side")
+(declare-function dirvish-side-session-visible-p "dirvish-side")
 (require 'dirvish)
 (require 'dired-x)
 (require 'transient)
-;; (require 'dirvish-side)
 
 (defcustom dirvish-subtree-listing-switches nil
   "Listing SWITCHES used in subtrees.
@@ -415,7 +414,7 @@ See `dirvish-subtree-file-viewer' for details"
       (setq orig-buf (current-buffer))
       (switch-to-buffer buf)
       (setq new-line (funcall dirvish-subtree-file-viewer orig-buf))
-      (if (dirvish-side--session-visible-p) (select-window (dv-root-window session)) (switch-to-buffer orig-buf)))
+      (if (dirvish-side-session-visible-p) (select-window (dv-root-window session)) (switch-to-buffer orig-buf)))
     (when new-line (progn
          (dired-find-file)
          (goto-line new-line)))))
