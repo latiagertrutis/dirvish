@@ -19,6 +19,7 @@
 (declare-function consult-lsp-file-symbols "consult-lsp")
 (declare-function consult-imenu "consult-imenu")
 (declare-function consult-line "consult")
+(declare-function dirvish-side--session-visible-p "dirvish-side")
 (require 'dirvish)
 (require 'dired-x)
 (require 'transient)
@@ -275,22 +276,22 @@ Try executing `consult-lsp-file-symbols', `consult-imenu',
 `consult-line' and `imenu' sequentially until one of them
 succeed, returning line user navigates to."
 
-  (let* ((newLine nil))
+  (let* ((new-line nil))
   (unwind-protect
       (condition-case nil (consult-lsp-file-symbols t)
-        (error (condition-case nil (or (consult-imenu) t)
+        (error (condition-case nil (consult-imenu)
                  (error (condition-case nil (consult-line)
                           (error (message "Failed to view file `%s'. \
 See `dirvish-subtree-file-viewer' for details"
                                           buffer-file-name))
                           (quit nil)
-                        (:sucess (setq newLine (line-number-at-pos)))))
+                        (:success (setq new-line (line-number-at-pos)))))
                  (quit nil)
-                 (:success (setq newLine (line-number-at-pos)))))
+                 (:success (setq new-line (line-number-at-pos)))))
         (quit nil)
-        (:sucess (setq newLine (line-number-at-pos))))
+        (:success (setq new-line (line-number-at-pos))))
         (switch-to-buffer orig-buf))
-    newLine))
+    new-line))
 
 
 (dirvish-define-attribute subtree-state
@@ -394,7 +395,7 @@ See `dirvish-subtree-file-viewer' for details"
                    index))
 	 (session (dirvish-curr))
          (buf (or (when (dv-preview-window session) (window-buffer (dv-preview-window session))) (get-file-buffer file) (find-file-noselect file)))
-         (newLine nil)
+         (new-line nil)
          orig-buf)
     ;; TODO: This is a fix from previous version introduced in
     ;; https://github.com/latiagertrutis/dirvish/pull/2
@@ -412,11 +413,11 @@ See `dirvish-subtree-file-viewer' for details"
     (with-selected-window (or (get-buffer-window buf) (next-window))
       (setq orig-buf (current-buffer))
       (switch-to-buffer buf)
-      (setq newLine (funcall dirvish-subtree-file-viewer orig-buf))
-      (if (dirvish-side--session-visible-p) (select-window (dv-root-window session) (switch-to-buffer orig-buf))))
-    (when newLine (progn
+      (setq new-line (funcall dirvish-subtree-file-viewer orig-buf))
+      (if (dirvish-side--session-visible-p) (select-window (dv-root-window session)) (switch-to-buffer orig-buf)))
+    (when new-line (progn
          (dired-find-file)
-         (goto-line newLine)))))
+         (goto-line new-line)))))
 
 
 (defalias 'dirvish-toggle-subtree #'dirvish-subtree-toggle
