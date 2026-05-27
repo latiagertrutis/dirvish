@@ -394,7 +394,7 @@ See `dirvish-subtree-file-viewer' for details"
                         (user-error "Remote file `%s' not previewed" index))
                    index))
 	 (session (dirvish-curr))
-         (buf (find-file-noselect file))
+         (buf (or (when (dv-preview-window session) (window-buffer (dv-preview-window session))) (find-file-noselect file)))
          (new-line nil)
          orig-buf)
     ;; TODO: This is a fix from previous version introduced in
