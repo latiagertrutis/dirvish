@@ -279,18 +279,18 @@ succeed, returning line user navigates to."
   (let* ((new-line nil))
   (unwind-protect
       (condition-case nil (consult-lsp-file-symbols t)
+        (quit nil)
+        (:success (setq new-line (line-number-at-pos)))
         (error (condition-case nil (consult-imenu)
+                 (quit nil)
+                 (:success (setq new-line (line-number-at-pos)))
                  (error (condition-case nil (consult-line)
+                          (quit nil)
+                          (:success (setq new-line (line-number-at-pos)))
                           (error (message "Failed to view file `%s'. \
 See `dirvish-subtree-file-viewer' for details"
-                                          buffer-file-name))
-                          (quit nil)
-                        (:success (setq new-line (line-number-at-pos)))))
-                 (quit nil)
-                 (:success (setq new-line (line-number-at-pos)))))
-        (quit nil)
-        (:success (setq new-line (line-number-at-pos))))
-        (switch-to-buffer orig-buf))
+                                          buffer-file-name)))))))
+      (switch-to-buffer orig-buf))
     new-line))
 
 
@@ -394,7 +394,7 @@ See `dirvish-subtree-file-viewer' for details"
                         (user-error "Remote file `%s' not previewed" index))
                    index))
 	 (session (dirvish-curr))
-         (buf (or (when (dv-preview-window session) (window-buffer (dv-preview-window session))) (get-file-buffer file) (find-file-noselect file)))
+         (buf (find-file-noselect file))
          (new-line nil)
          orig-buf)
     ;; TODO: This is a fix from previous version introduced in
