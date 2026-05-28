@@ -398,14 +398,7 @@ See `dirvish-subtree-file-viewer' for details"
          (buf (if preview (window-buffer preview) (find-file-noselect file)))
          (new-line nil)
          orig-buf)
-    ;; TODO: This is a fix from previous version introduced in
-    ;; https://github.com/latiagertrutis/dirvish/pull/2
-    ;; We should revise this to check if the original behavior has
-    ;; been changed. Maybe was intended to show the symbol in preview buffer
-
-    ;; This will clear the current session to allow consult functions
-    ;; to behave as expected. 'quit symbol is important for dirvish-side
-    ;; to work correctly, otherwise side buffer will break the view
+    ;; TODO: investigate ui issues with helm
     (when (with-current-buffer buf
             (save-excursion (goto-char (point-min))
                             (search-forward "\0" nil 'noerror)))
