@@ -394,7 +394,8 @@ See `dirvish-subtree-file-viewer' for details"
                         (user-error "Remote file `%s' not previewed" index))
                    index))
 	 (session (dirvish-curr))
-         (buf (or (when (dv-preview-window session) (window-buffer (dv-preview-window session))) (find-file-noselect file)))
+         (preview (dv-preview-window session))
+         (buf (if preview (window-buffer preview) (find-file-noselect file)))
          (new-line nil)
          orig-buf)
     ;; TODO: This is a fix from previous version introduced in
@@ -415,9 +416,9 @@ See `dirvish-subtree-file-viewer' for details"
       (switch-to-buffer buf)
       (setq new-line (funcall dirvish-subtree-file-viewer orig-buf))
       (if (dirvish-side-session-visible-p) (select-window (dv-root-window session)) (switch-to-buffer orig-buf)))
-    (when new-line (progn
+    (when new-line
          (dired-find-file)
-         (goto-line new-line)))))
+         (goto-line new-line))))
 
 
 (defalias 'dirvish-toggle-subtree #'dirvish-subtree-toggle
