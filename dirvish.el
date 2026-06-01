@@ -1127,10 +1127,12 @@ Optionally, use CURSOR as the enabled cursor type."
                          (dirvish-use-header-line t))))))
 
 (defun dirvish-pre-redisplay-h (window)
-  "Record root WINDOW and redisplay sessions in selected frame."
-  (setq dirvish--selected-window (frame-selected-window))
-  (when-let* ((dv (dirvish-curr))) (setf (dv-root-window dv) window))
-  (dirvish--redisplay))
+  "Record root WINDOW and redisplay sessions in selected frame.
+Will only redisplay when WINDOW is the selected window in it's frame."
+  (when (eq (frame-selected-window) window)
+    (setq dirvish--selected-window window)
+    (when-let* ((dv (dirvish-curr))) (setf (dv-root-window dv) window))
+    (dirvish--redisplay)))
 
 (defun dirvish-post-command-h ()
   "Reset cursor shape and position and update preview."

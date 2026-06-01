@@ -370,6 +370,7 @@ See `dirvish-subtree-file-viewer' for details"
               (beg (overlay-start ov))
               (end (overlay-end ov)))
     (goto-char beg)
+    (dired-move-to-filename)
     (dired-previous-line 1)
     (cl-loop for o in (overlays-in (point-min) (point-max))
              when (and (overlay-get o 'dired-subtree-depth)
