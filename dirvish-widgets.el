@@ -67,6 +67,11 @@ This is used to generate image thumbnails."
 This is used to generate video thumbnails on macOS/Linux."
   :group 'dirvish :type 'string)
 
+(defcustom dirvish-f3d-program "f3d"
+  "Absolute or reletive name of the `f3d' program.
+This is used to generate 3d models thumbnails."
+  :group 'dirvish :type 'string)
+
 (defcustom dirvish-mtn-program "mtn"
   "Absolute or reletive name of the `mtn' program.
 This is used to generate video thumbnails on Windows."
@@ -559,6 +564,14 @@ GROUP-TITLES is a list of group titles."
   (format "%s%s" (dirvish-media--group-heading '("PDF info"))
           (dirvish-media--metadata-from-pdfinfo (cdr file))))
 
+(cl-defmethod dirvish-media-metadata ((file (head model)))
+  "Get metadata for model FILE."
+  (let ((minfo (dirvish-media--metadata-from-mediainfo (cdr file))))
+    (format "%s%s"
+            (dirvish-media--group-heading '("General"))
+            (dirvish-media--format-metadata
+             minfo '(Full-name File-size)))))
+
 (cl-defmethod dirvish-media-metadata ((file (head font)))
   "Get metadata for font FILE."
   (let ((finfo
@@ -599,6 +612,7 @@ GROUP-TITLES is a list of group titles."
                    (type (cond ((member ext dirvish-image-exts) 'image)
                                ((member ext dirvish-video-exts) 'video)
                                ((member ext dirvish-font-exts) 'font)
+							   ((member ext dirvish-model-exts) 'model)
                                ((equal ext "pdf") 'pdf)
                                (t (user-error "Not a media file")))))
               ;; ensure the content is higher than the window height to avoid
@@ -750,6 +764,21 @@ Require: `7z' executable (`7zz' on macOS)"
   (when (member ext dirvish-archive-exts)
     ;; TODO: parse output from (dirvish-7z-program "l" "-ba" "-slt" "-sccUTF-8")
     `(shell . (,dirvish-7z-program "l" "-ba" ,file))))
+
+(dirvish-define-preview 3d (file ext preview-window)
+  "Display thumbnail for 3d models."
+  :require (dirvish-f3d-program)
+  (when (member ext dirvish-model-exts)
+	(let* ((width (dirvish-media--img-size preview-window))
+		   (height (dirvish-media--img-size preview-window 'height))
+		   (cache (dirvish--img-thumb-name file width)))
+	  (if (file-exists-p cache)
+		  `(img . ,(create-image cache nil nil :max-width width :max-height height))
+		`(cache . (,dirvish-f3d-program "--config=thumbnail"
+										"--verbose=quiet"
+										,(format "--output=%s" cache)
+										,(format "--resolution=%s,%s" width height)
+										,file))))))
 
 (provide 'dirvish-widgets)
 ;;; dirvish-widgets.el ends here
