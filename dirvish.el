@@ -1128,8 +1128,7 @@ Optionally, use CURSOR as the enabled cursor type."
 
 (defun dirvish-pre-redisplay-h (window)
   "Record root WINDOW and redisplay sessions in selected frame.
-Only act when WINDOW is the selected window in its frame to prevent
-a redisplay feedback loop when dirvish is open in multiple frames."
+Will only redisplay when WINDOW is the selected window in it's frame."
   (when (eq (frame-selected-window) window)
     (setq dirvish--selected-window window)
     (when-let* ((dv (dirvish-curr))) (setf (dv-root-window dv) window))
